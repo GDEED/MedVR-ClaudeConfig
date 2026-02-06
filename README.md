@@ -95,6 +95,39 @@ After setup, all rules and skills are active. Try:
 | `/new-test` | Generate unit/E2E tests |
 | `/spec` | Document completed work |
 
+## Skills
+
+Slash commands you can invoke during a Claude Code session.
+
+### `/setup-config`
+Interactive setup wizard. Collects your app name, bundle ID, and feature selections, then configures all template files for your project. Run this first.
+
+### `/review-h`
+Scans your Swift files across 9 categories (state management, concurrency, error handling, visionOS patterns, SharePlay, ECS, etc.) and produces a report card with severity-rated findings. Supports `fix N` to apply fixes inline.
+
+### `/debug-h`
+Structured debugging mentor. Walks you through an 8-step process: triage, locate, describe, check docs, add debug prints, diagnose, fix. Keeps changes minimal (max 10 lines per fix) and cleans up debug prints when done.
+
+### `/debug-entity`
+Inspects a RealityKit entity by name — shows its components, position, scale, children, and flags missing collision or hover setup. Run without arguments to list all entities in the project.
+
+### `/immersive-debug`
+Focused debugger for immersive space issues: hand tracking, collisions, entity visibility, attachments, image tracking, and space lifecycle. CLI-style flow with targeted diagnostic checks.
+
+### `/find-docs`
+Searches Apple Developer Documentation via MCP. Returns API summaries, platform availability, code examples, and relevant WWDC sessions. Supports shortcuts like `/find-docs rk` for RealityKit.
+
+### `/new-test`
+Generates unit tests and E2E tests for work completed in the current session. Uses `test_what_condition_expected` naming. Supports `unit`, `e2e`, or feature-specific arguments.
+
+### `/spec`
+Documents recently completed work as markdown specs in `specs/`. Auto-detects whether the work is an immersive experience, feature, or architecture change and files it accordingly.
+
+## Agent
+
+### `swiftui-visionos`
+A specialized subagent Claude can delegate to for SwiftUI and visionOS tasks. Covers RealityKit/ECS, ARKit hand and image tracking, SharePlay, Swift 6 concurrency, and immersive space patterns. Loaded with the SwiftUI Expert plugin for modern API guidance. Claude routes complex implementation work here automatically.
+
 ## Features (toggleable)
 
 The template uses conditional blocks (`<!-- IF:FEATURE -->`) so unused features are cleanly removed during setup:
