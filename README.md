@@ -36,7 +36,7 @@ CLAUDE.md                          # Project instructions (configurable)
 
 ```bash
 # From your visionOS project root
-git clone https://github.com/YOUR_ORG/MedVR-ClaudeConfig.git .claude-template
+git clone https://github.com/GDEED/MedVR-ClaudeConfig.git .claude-template
 cp -r .claude-template/.claude .
 cp .claude-template/CLAUDE.md .
 cp .claude-template/.mcp.json .
@@ -46,7 +46,27 @@ rm -rf .claude-template
 
 Or copy the files manually — you just need `CLAUDE.md`, `.mcp.json`, `.claude/`, and `specs/` at your project root.
 
-### 2. Run setup
+### 2. Install Swift LSP
+
+Install [SourceKit-LSP](https://github.com/swiftlang/sourcekit-lsp) so Claude Code gets code intelligence (go-to-definition, references, hover info):
+
+```bash
+brew install sourcekit-lsp
+```
+
+Then add it to your Claude Code settings (`~/.claude/settings.json`):
+
+```json
+{
+  "lsp": {
+    "swift": {
+      "command": "sourcekit-lsp"
+    }
+  }
+}
+```
+
+### 3. Run setup
 
 Open Claude Code in your project directory and run:
 
@@ -61,7 +81,7 @@ This will:
 - Remove config blocks for features you don't use
 - Generate starter spec files in `specs/`
 
-### 3. Start building
+### 4. Start building
 
 After setup, all rules and skills are active. Try:
 
