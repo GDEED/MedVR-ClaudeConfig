@@ -23,6 +23,7 @@ xcodebuild test -scheme {{SCHEME_NAME}} -destination 'platform=visionOS Simulato
 
 ## Key Concepts
 <!-- Define your app's key concepts, roles, or modes here after setup -->
+<!-- See specs/PRD.md for full product requirements and feature scope -->
 
 ## Critical Rules
 - NEVER edit `.pbxproj` files directly — create Swift files and add to Xcode manually
@@ -45,3 +46,11 @@ xcodebuild test -scheme {{SCHEME_NAME}} -destination 'platform=visionOS Simulato
 - ECS pattern for RealityKit: custom `Component` types + `System` types
 <!-- END:ECS -->
 - See @.claude/rules/ for path-scoped conventions (architecture, design, testing, views, visionOS)
+
+## Project Documentation
+- `specs/PRD.md` — Product requirements, feature scope, and user flows
+- `specs/architecture.md` — App-specific architecture, data flow, and file organization
+- `specs/DesignStyles.md` — Project design system (overrides defaults in .claude/rules/design-style.md)
+- `specs/testing.md` — Test structure, run commands, and naming conventions
+
+> **Always check specs/ before building new features** to stay aligned with project requirements and existing patterns.

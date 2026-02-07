@@ -9,6 +9,8 @@ description: Design system — typography, spacing, component patterns, visionOS
 
 # Design System
 
+> **Project-specific styles**: If `specs/DesignStyles.md` exists, prefer the project-specific values there over the defaults below. That file is auto-generated from the codebase during `/setup-config`.
+
 ## Typography
 
 ### Hierarchy
