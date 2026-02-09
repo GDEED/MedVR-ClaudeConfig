@@ -188,7 +188,7 @@ The template uses conditional blocks (`<!-- IF:FEATURE -->`) so unused features 
 
 ### Highest-Value Features (in order)
 
-1. **`/` slash commands** — Your custom workflows. `/cron`, `/test`, `/review`, etc. Type `/` to see all available.
+1. **`/` slash commands** — Your custom workflows. `/test`, `/review`, etc. Type `/` to see all available.
 2. **`CLAUDE.md`** — Project instructions auto-loaded every conversation. Put coding standards, project context, common commands here.
 3. **Memory** — `~/.claude/projects/*/memory/` persists across conversations. Claude reads/writes learnings automatically.
 4. **Parallel tool calls** — Claude runs independent operations simultaneously (reading multiple files, searching, etc.)
