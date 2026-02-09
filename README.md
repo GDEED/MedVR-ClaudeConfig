@@ -2,6 +2,18 @@
 
 A pre-configured Claude Code setup for visionOS development. Drop it into your project to get rules, skills, agents, and MCP tools tailored for building Apple Vision Pro apps with SwiftUI + RealityKit.
 
+## Install Claude Code
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
+Or via npm:
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
 ## What's Included
 
 ```
