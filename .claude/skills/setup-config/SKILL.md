@@ -66,6 +66,41 @@ Store selected features as flags: `SHAREPLAY`, `HAND_TRACKING`, `IMAGE_TRACKING`
 
 ---
 
+### Step 3b: DESIGN PREFERENCES
+
+Use `AskUserQuestion` with **3 questions** in a single call:
+
+**Q1:** "What's your app's primary accent color?"
+- **Blue (Default)** — System blue, standard visionOS tint
+- **Purple** — Indigo/violet, works well with visionOS glass
+- **Green** — Teal/green, good for health/nature/productivity apps
+- **Custom** — You'll provide a hex code or SwiftUI color name
+
+**Q2:** "What visual tone fits your app?"
+- **Clean & Minimal** — Muted palette, subtle accent usage, low opacity backgrounds
+- **Bold & Vibrant** — Saturated colors, strong contrast, expressive UI
+- **Warm & Organic** — Earthy tones, soft gradients, rounded friendly feel
+
+**Q3:** "Do you have additional brand colors?"
+- **No, just accent** — System colors for everything else
+- **Secondary color** — One more brand color for secondary actions
+- **Full palette** — Complete brand palette (you'll provide details)
+
+**Conditional follow-up:** If the user selected "Custom" for Q1, or "Secondary color" or "Full palette" for Q3, use another `AskUserQuestion` to ask for the specific color values. Prompt for:
+- If Custom accent: hex code or SwiftUI color name (e.g. `#FF6B35` or `Color.indigo`)
+- If Secondary color: hex code or SwiftUI color name + its role (e.g. "secondary actions", "highlights")
+- If Full palette: list of colors with roles (hex codes or SwiftUI color names)
+
+Store results as:
+- `ACCENT_COLOR` — SwiftUI color value (e.g. `.blue`, `.purple`, `Color(hex: "FF6B35")`)
+- `ACCENT_COLOR_NAME` — Human-readable name (e.g. "Blue", "Purple", "Coral")
+- `VISUAL_TONE` — One of: `minimal`, `vibrant`, `warm`
+- `HAS_BRAND_COLORS` — Boolean: whether user provided additional colors
+- `SECONDARY_COLOR` / `SECONDARY_ROLE` — If provided (e.g. `.mint` / "secondary actions")
+- `CUSTOM_PALETTE` — If provided, list of `{color, role}` entries
+
+---
+
 ### Step 4: APPLY CONFIGURATION
 
 Perform these operations:
@@ -309,7 +344,17 @@ Use **Glob** and **Grep** to discover the user's existing design language. Searc
 
 **Step 5b: Generate `specs/DesignStyles.md`**
 
-Analyze the scan results and generate a structured design document. Group findings into categories and include real code snippets from the codebase. Use the template below, filling in discovered values and removing sections that had no findings.
+Analyze the scan results and generate a structured design document. **Merge codebase scan results with design preferences from Step 3b.** Group findings into categories and include real code snippets from the codebase. Use the template below, filling in discovered values and removing sections that had no findings.
+
+**Color merge logic:**
+- If the codebase scan found color patterns AND the user provided preferences in Step 3b, codebase values take priority. Note both with a comment like "// Codebase uses X; user preference was Y — resolve if needed"
+- If the codebase scan found NO color patterns, use Step 3b preferences as the baseline
+- Always include the Semantic Colors and Color Application Patterns subsections
+
+**Tone-specific concrete values** (use based on `VISUAL_TONE` from Step 3b):
+- `minimal`: `opacity(0.1)` backgrounds, `.secondary` text for supporting content, sparse accent use, standard corner radii (12pt)
+- `vibrant`: `opacity(0.25)` backgrounds, `.primary` text, prominent accent usage, standard corner radii (12pt)
+- `warm`: `opacity(0.15)` backgrounds, warm neutrals for supporting text, higher corner radii (16-20pt)
 
 ```markdown
 # [APP_NAME] Design System
@@ -321,24 +366,82 @@ Reference this document when building new views to maintain visual consistency.
 
 ## Color Palette
 
-### Primary Colors
-<!-- List the main colors found in the codebase -->
-<!-- Example: -->
-<!-- - **Accent**: `.blue` (used for primary actions, links) -->
-<!-- - **Background**: `Color("AppBackground")` (main background) -->
+### Accent Color
+| Variant | Value | Usage |
+|---------|-------|-------|
+| Primary | [ACCENT_COLOR] | Buttons, links, interactive elements |
+| Light | [ACCENT_COLOR].opacity(0.2) | Badge backgrounds, selected states |
+| Glass tint | [ACCENT_COLOR].opacity(0.1) | Glass panel overlays |
 
+[IF SECONDARY_COLOR provided:]
+### Secondary Color
+| Variant | Value | Usage |
+|---------|-------|-------|
+| Primary | [SECONDARY_COLOR] | [SECONDARY_ROLE] |
+| Light | [SECONDARY_COLOR].opacity(0.2) | Supporting highlights |
+
+[IF CUSTOM_PALETTE provided:]
+### Brand Palette
+| Color | Value | Role |
+|-------|-------|------|
+[for each entry in CUSTOM_PALETTE: | Name | Value | Role |]
+
+### Semantic Colors
 | Role | Value | Usage |
 |------|-------|-------|
-| ... | ... | ... |
+| Primary text | `.primary` | Main content, headings |
+| Secondary text | `.secondary` | Supporting content, timestamps |
+| Destructive | `.red` | Delete actions, error states |
+| Success | `.green` | Completion, positive indicators |
+| Warning | `.orange` | Caution states, alerts |
 
 ### Color Assets
-<!-- List any custom colors found in .xcassets -->
+<!-- List any custom colors found in .xcassets — remove if none -->
 
-### Color Patterns
+### Color Application Patterns
 ```swift
-// Document common color application patterns found
-// e.g. how backgrounds, text, accents are typically applied
+// Primary action — accent-tinted button
+Button("Action") { }
+    .buttonStyle(.borderedProminent)
+    .tint([ACCENT_COLOR])
+
+// Badge with accent background
+Text(label)
+    .font(.caption.weight(.semibold))
+    .padding(.horizontal, 12)
+    .padding(.vertical, 6)
+    .background([ACCENT_COLOR].opacity(0.2))
+    .foregroundStyle([ACCENT_COLOR])
+    .clipShape(Capsule())
+
+// Glass panel with accent tint
+content
+    .glassBackgroundEffect()
+    .overlay([ACCENT_COLOR].opacity(0.1))
 ```
+
+### Visual Tone: [Clean & Minimal / Bold & Vibrant / Warm & Organic]
+[IF minimal:]
+- Background opacity: `0.1` — subtle, understated fills
+- Text style: `.secondary` for supporting content
+- Accent usage: Sparse — reserve for primary actions only
+- Overall feel: Quiet, focused, system-native
+
+[IF vibrant:]
+- Background opacity: `0.25` — saturated, expressive fills
+- Text style: `.primary` for most content, high contrast
+- Accent usage: Prominent — use for actions, highlights, key elements
+- Overall feel: Bold, energetic, attention-grabbing
+
+[IF warm:]
+- Background opacity: `0.15` — soft, inviting fills
+- Text style: Warm neutrals for supporting content
+- Accent usage: Balanced — friendly and approachable
+- Corner radii: 16-20pt for cards (softer, friendlier feel)
+- Overall feel: Organic, approachable, human
+
+### Dark Mode (visionOS)
+visionOS is always dark. All colors must have sufficient contrast against dark backgrounds and glass materials. Test accent colors at low opacity over `.glassBackgroundEffect()` to ensure readability.
 
 ---
 
@@ -427,11 +530,13 @@ Reference this document when building new views to maintain visual consistency.
 **Important generation rules:**
 - Use **actual values and code snippets** from the scan — do not use placeholder text
 - **Remove sections entirely** if nothing was found for that category (don't leave empty sections with only HTML comments)
+- For the Color Palette section: always populate Accent Color, Semantic Colors, Color Application Patterns, Visual Tone, and Dark Mode subsections using Step 3b preferences when no codebase data exists
+- Remove conditional `[IF ...]` sections (Secondary Color, Brand Palette) if the user didn't provide those values
 - If a section has findings, replace the HTML comments with the actual content
 - **Consolidate similar values** — e.g. if padding of 16 appears 20 times, note it as the standard
 - **Note inconsistencies** — if spacing varies wildly (e.g. padding 8, 12, 16, 20 all used frequently), flag this as something to standardize
 - Include **file:line references** for key patterns so the user can verify
-- If the codebase is brand new / minimal (fewer than 3 view files), generate a **starter design system** instead, based on the defaults in `.claude/rules/design-style.md`, and note that it should be updated as the app grows
+- If the codebase is brand new / minimal (fewer than 3 view files), generate a **starter design system** using Step 3b design preferences combined with the defaults in `.claude/rules/design-style.md`, and note that it should be updated as the app grows
 
 #### Update `specs/immersive/README.md`
 If any immersive features are enabled (HAND_TRACKING, IMAGE_TRACKING, or ECS), update the README to note which immersive capabilities are configured.
@@ -491,6 +596,11 @@ Features enabled:
   ✓ Image Tracking     (or ✗ if disabled)
   ✓ ECS Components     (or ✗ if disabled)
 
+Design:
+  Accent: [ACCENT_COLOR_NAME]
+  Tone: [Clean & Minimal / Bold & Vibrant / Warm & Organic]
+  Palette: [System defaults / Custom accent / Full brand palette]
+
 Files configured: [count]
 Specs generated: [count]
 
@@ -500,7 +610,7 @@ Next steps:
   1. Review CLAUDE.md for accuracy
   2. Add your app's key concepts to CLAUDE.md
   3. Fill in specs/PRD.md with your product requirements
-  4. Review specs/DesignStyles.md and refine as needed
+  4. Review specs/DesignStyles.md — verify colors match your brand
   5. Run /review-h to validate your codebase
   6. Start building!
 ══════════════════════════════════════

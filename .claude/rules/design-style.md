@@ -29,6 +29,24 @@ Text("120")
     .fontWeight(.semibold)
 ```
 
+## Color Palette
+- **Accent**: `.accentColor` / system blue — primary actions, links, interactive elements
+- **Primary text**: `.primary` — main content
+- **Secondary text**: `.secondary` — supporting content, timestamps
+- **Destructive**: `.red` — delete actions, error states
+- **Success**: `.green` — completion, positive status
+
+### Glass Tinting
+```swift
+// Tinted glass panel
+content
+    .padding(16)
+    .glassBackgroundEffect()
+    .overlay(Color.accentColor.opacity(0.1))
+```
+
+> See `specs/DesignStyles.md` for project-specific colors when available.
+
 ## Component Patterns
 
 ### Badge
