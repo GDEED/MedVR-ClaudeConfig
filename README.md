@@ -141,3 +141,53 @@ The template uses conditional blocks (`<!-- IF:FEATURE -->`) so unused features 
 
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code)
 - Xcode with visionOS SDK
+
+## Prompt Examples
+
+> **Rule of thumb:** Always give Claude a starting point — a file name, view name, class name, or function name. Vague prompts produce vague results. Specific prompts produce working code.
+
+**Bad vs. Good**
+
+| Vague (avoid) | Specific (do this) |
+|---|---|
+| `Add a settings screen` | `Create a SettingsView that reads from AppModel and has toggles for haptics and sound` |
+| `Fix the bug` | `In GameViewModel.handleScore(), the score resets to 0 when round ends — it should persist` |
+| `Make it look better` | `In PatientCardView, apply the glass panel pattern from specs/DesignStyles.md and use .headline for the name` |
+| `Add hand tracking` | `In ImmersiveView, add a HandTrackingProvider that reads .indexFingerTip and calls placePin(at:) on pinch` |
+| `Write tests` | `Write unit tests for SessionController.joinSession() — cover success, timeout, and already-joined states` |
+
+**Patterns That Work**
+
+- `In @ContentView, extract the toolbar into a separate ToolbarView struct and pass selectedTool as a @Binding.`
+- `In @AppModel.swift, add a computed property activeProcedure that filters procedures by .inProgress status.`
+- `In SimulationSystem.update(), the entity drifts after reset — clamp position to boundingBox on each tick.`
+- `In @PatientListView, replace the ForEach with a LazyVStack and add a .searchable modifier that filters by patient.name.`
+- `In SceneController.loadScene(), add error handling — if Entity(named:) throws, set appModel.sceneState to .failed with the error.`
+- `In @ImmersiveView, attach a SwiftUI Attachment(id: "vitals") to the monitorEntity showing HeartRateView.`
+- `Rename handleTap() to didSelectInstrument() in @InstrumentPickerView and update all call sites.`
+
+## Claude Code 2-Min Tutorial
+
+### Skills vs Commands
+
+- **Commands** = `.claude/commands/*.md` (older format) — markdown templates, invoked with `/command-name`
+- **Skills** = `.claude/skills/*.md` (newer format) — same idea, richer metadata, also invoked with `/skill-name`
+- Both work identically from your perspective: type `/name` and it runs.
+
+### Highest-Value Features (in order)
+
+1. **`/` slash commands** — Your custom workflows. `/cron`, `/test`, `/review`, etc. Type `/` to see all available.
+2. **`CLAUDE.md`** — Project instructions auto-loaded every conversation. Put coding standards, project context, common commands here.
+3. **Memory** — `~/.claude/projects/*/memory/` persists across conversations. Claude reads/writes learnings automatically.
+4. **Parallel tool calls** — Claude runs independent operations simultaneously (reading multiple files, searching, etc.)
+5. **Plan mode** — For non-trivial tasks, Claude explores the codebase first, proposes a plan, then you approve before any code is written.
+6. **Background agents** — Launch long tasks in background, check on them later.
+7. **`@file`** — Reference files inline in your message: `@apps/backend/app/main.py explain this`
+
+### Power Shortcuts
+
+- `/help` — full help
+- `/clear` — reset context
+- `/compact` — compress conversation to save context
+- `Esc` — cancel current operation
+- `Shift+Tab` — toggle plan mode
